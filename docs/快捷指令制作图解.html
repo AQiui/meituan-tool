@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美团助手 · 快捷指令自动化制作图解</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+    background: #F5F5F7; color: #1C1C1E; line-height: 1.6;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 60px; }
+
+  /* 头部 */
+  .hero {
+    background: linear-gradient(135deg, #FFD100 0%, #FFC300 100%);
+    margin: 0 -16px 24px; padding: 36px 20px 28px; border-radius: 0 0 24px 24px;
+    text-align: center;
+  }
+  .hero .logo {
+    width: 64px; height: 64px; background: #fff; border-radius: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 34px; font-weight: 900; color: #E2231A; margin-bottom: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.12);
+  }
+  .hero h1 { font-size: 22px; font-weight: 800; color: #1C1C1E; }
+  .hero p { font-size: 13px; color: rgba(0,0,0,.55); margin-top: 6px; }
+
+  /* 卡片 */
+  .card {
+    background: #fff; border-radius: 16px; padding: 18px;
+    margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .card h2 { font-size: 17px; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .card h2 .num {
+    width: 26px; height: 26px; border-radius: 50%; background: #E2231A; color: #fff;
+    font-size: 14px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .card h3 { font-size: 15px; font-weight: 700; margin: 14px 0 8px; }
+
+  /* 提示条 */
+  .tip {
+    background: #FFF8E1; border-left: 4px solid #FFD100; border-radius: 8px;
+    padding: 10px 12px; font-size: 13px; margin: 10px 0; color: #5D4A00;
+  }
+  .tip.red { background: #FDF0EF; border-color: #E2231A; color: #8C1D18; }
+  .tip.green { background: #EDFAF0; border-color: #34C759; color: #14532D; }
+
+  /* 步骤 */
+  .step { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F2; }
+  .step:last-child { border-bottom: none; }
+  .step .n {
+    width: 28px; height: 28px; border-radius: 50%; background: #1C1C1E; color: #FFD100;
+    font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step .t { flex: 1; font-size: 14px; }
+  .step .t b { display: block; font-size: 14px; margin-bottom: 2px; }
+  .step .t span { color: #6E6E73; font-size: 13px; }
+  .step .t code { background: #F0F0F2; border-radius: 4px; padding: 1px 6px; font-size: 12.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  th { background: #F5F5F7; text-align: left; padding: 8px 10px; font-weight: 700; font-size: 12.5px; color: #3A3A3C; }
+  td { padding: 8px 10px; border-bottom: 1px solid #F0F0F2; vertical-align: top; }
+  td.url { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: #E2231A; word-break: break-all; }
+  tr:last-child td { border-bottom: none; }
+
+  /* 复制按钮 */
+  .copy {
+    display: inline-flex; align-items: center; gap: 6px; background: #1C1C1E; color: #FFD100;
+    border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 700;
+    cursor: pointer; margin-top: 6px;
+  }
+  .copy:active { transform: scale(.96); }
+  .copy.ok { background: #34C759; color: #fff; }
+
+  /* 自动化配置卡 */
+  .auto {
+    border: 2px solid #F0F0F2; border-radius: 14px; padding: 14px; margin-bottom: 12px;
+  }
+  .auto.hot { border-color: #FFD100; background: #FFFEF7; }
+  .auto .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .auto .head b { font-size: 15px; }
+  .auto .head .time {
+    background: #E2231A; color: #fff; font-size: 13px; font-weight: 800;
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .auto .kv { display: flex; font-size: 13px; padding: 4px 0; }
+  .auto .kv .k { width: 88px; color: #6E6E73; flex-shrink: 0; }
+  .auto .kv .v { flex: 1; word-break: break-all; }
+  .auto .kv .v.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: #E2231A; }
+
+  /* 开关说明 */
+  .sw { display: inline-block; width: 34px; height: 20px; border-radius: 12px; background: #34C759; position: relative; vertical-align: middle; }
+  .sw::after { content: ""; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: #fff; top: 2px; right: 2px; }
+  .sw.off { background: #E5E5EA; }
+  .sw.off::after { right: auto; left: 2px; }
+
+  details { margin-top: 8px; }
+  details summary { font-size: 13.5px; font-weight: 700; color: #E2231A; cursor: pointer; padding: 6px 0; }
+  details p, details li { font-size: 13px; color: #3A3A3C; }
+  details ul { padding-left: 20px; }
+  details li { margin: 4px 0; }
+
+  .footer { text-align: center; font-size: 12px; color: #8E8E93; margin-top: 24px; }
+  .footer a { color: #E2231A; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="logo">券</div>
+    <h1>快捷指令自动化制作图解</h1>
+    <p>美团助手 MeiTuanTool · 每天自动签到 + 准点抢神券</p>
+  </div>
+
+  <!-- 开始之前 -->
+  <div class="card">
+    <h2><span class="num">0</span>开始之前(30 秒验证)</h2>
+    <p style="font-size:14px">先确认两件事,否则自动化白搭:</p>
+    <div class="step">
+      <div class="n">1</div>
+      <div class="t"><b>App 已通过巨魔安装并添加了账号</b>
+      <span>「账号」页能看到 token,首页统计卡片账号数 ≥ 1</span></div>
+    </div>
+    <div class="step">
+      <div class="n">2</div>
+      <div class="t"><b>Safari 测试链接能否唤起 App</b>
+      <span>地址栏输入 <code>meituantool://run</code> 回车,弹出"打开美团助手"即正常</span></div>
+    </div>
+    <div class="tip red">如果 Safari 输入链接没反应:说明 App 没装好或 URL Scheme 未注册,先解决安装问题,不要继续配置自动化。</div>
+  </div>
+
+  <!-- 通用步骤 -->
+  <div class="card">
+    <h2><span class="num">1</span>通用创建步骤(以 11 点抢券为例)</h2>
+    <div class="step">
+      <div class="n">1</div>
+      <div class="t"><b>打开「快捷指令」App</b>
+      <span>底部标签栏点「自动化」(不是"所有快捷指令")</span></div>
+    </div>
+    <div class="step">
+      <div class="n">2</div>
+      <div class="t"><b>点右上角 ➕ →「创建个人自动化」</b>
+      <span>列表第一项就是</span></div>
+    </div>
+    <div class="step">
+      <div class="n">3</div>
+      <div class="t"><b>触发条件选「特定时间」</b>
+      <span>时间设为 <code>10:58</code>,「重复」选「每天」,点下一步</span></div>
+    </div>
+    <div class="step">
+      <div class="n">4</div>
+      <div class="t"><b>点「添加操作」→ 搜索「打开 URL」</b>
+      <span>在"网页"或"App"分类里,选中「打开 URL」动作</span></div>
+    </div>
+    <div class="step">
+      <div class="n">5</div>
+      <div class="t"><b>URL 一栏填入(点右侧复制)</b>
+      <span><code>meituantool://run?tasks=coupon</code></span>
+      <button class="copy" data-url="meituantool://run?tasks=coupon">复制链接</button></div>
+    </div>
+    <div class="step">
+      <div class="n">6</div>
+      <div class="t"><b>点动作卡片上的 ›(展开详情)</b>
+      <span>关闭「运行前询问」开关 <span class="sw off"></span> ← <b style="display:inline">这一步最关键</b></span></div>
+    </div>
+    <div class="step">
+      <div class="n">7</div>
+      <div class="t"><b>下一步 → 再关一次「运行前询问」→ 完成</b>
+      <span>最后确认页顶部还有个总开关,也要关掉"运行前询问"</span></div>
+    </div>
+    <div class="tip">🔑 两个地方都有"运行前询问",任意一个没关,到点都会弹窗等你确认,自动化就废了。</div>
+  </div>
+
+  <!-- 全部自动化清单 -->
+  <div class="card">
+    <h2><span class="num">2</span>全部自动化清单(共 6 个,按表建即可)</h2>
+    <table>
+      <tr><th style="width:34%">自动化</th><th style="width:16%">时间</th><th>URL</th></tr>
+      <tr><td>凌晨签到</td><td>00:05</td><td class="url">meituantool://run?tasks=sign&amp;notify=0</td></tr>
+      <tr><td><b>11 点抢券</b></td><td>10:58</td><td class="url">meituantool://run?tasks=coupon</td></tr>
+      <tr><td>11 点补枪</td><td>11:00</td><td class="url">meituantool://run?tasks=coupon&amp;notify=0</td></tr>
+      <tr><td><b>17 点抢券</b></td><td>16:58</td><td class="url">meituantool://run?tasks=coupon</td></tr>
+      <tr><td><b>21 点抢券</b></td><td>20:58</td><td class="url">meituantool://run?tasks=coupon</td></tr>
+      <tr><td>晚间兜底(可选)</td><td>21:02</td><td class="url">meituantool://run?notify=0</td></tr>
+    </table>
+    <div class="tip green">💡 每个自动化就是:特定时间 + 打开 URL,照上面 7 步复制着建。带 <b>notify=0</b> 的是静默执行不弹通知,避免补枪时打扰你。</div>
+
+    <details>
+      <summary>为什么抢券要提前 2 分钟(10:58)?</summary>
+      <p>红包池每天 11:00/17:00/21:00 整点开放。App 冷启动 + 发请求有 1~2 秒开销,提前唤起后 App 会先查询红包池(未开放会提示"不在时段"自动返回),到开放瞬间的 11:00 补枪自动化正好接力命中。实测比整点才唤起命中率高很多。</p>
+    </details>
+  </div>
+
+  <!-- 精确配置卡 -->
+  <div class="card">
+    <h2><span class="num">3</span>每个自动化的精确配置</h2>
+
+    <div class="auto hot">
+      <div class="head"><b>① 凌晨签到(养红豆)</b><span class="time">00:05</span></div>
+      <div class="kv"><span class="k">触发</span><span class="v">特定时间 · 每天 00:05</span></div>
+      <div class="kv"><span class="k">动作</span><span class="v">打开 URL</span></div>
+      <div class="kv"><span class="k">URL</span><span class="v mono">meituantool://run?tasks=sign&amp;notify=0</span></div>
+      <div class="kv"><span class="k">运行前询问</span><span class="v"><span class="sw off"></span> 关闭</span></div>
+      <button class="copy" data-url="meituantool://run?tasks=sign&notify=0">复制 URL</button>
+    </div>
+
+    <div class="auto hot">
+      <div class="head"><b>② 11 点抢券</b><span class="time">10:58</span></div>
+      <div class="kv"><span class="k">触发</span><span class="v">特定时间 · 每天 10:58</span></div>
+      <div class="kv"><span class="k">动作</span><span class="v">打开 URL</span></div>
+      <div class="kv"><span class="k">URL</span><span class="v mono">meituantool://run?tasks=coupon</span></div>
+      <div class="kv"><span class="k">运行前询问</span><span class="v"><span class="sw off"></span> 关闭</span></div>
+      <button class="copy" data-url="meituantool://run?tasks=coupon">复制 URL</button>
+    </div>
+
+    <div class="auto">
+      <div class="head"><b>③ 11 点补枪</b><span class="time">11:00</span></div>
+      <div class="kv"><span class="k">触发</span><span class="v">特定时间 · 每天 11:00</span></div>
+      <div class="kv"><span class="k">动作</span><span class="v">打开 URL</span></div>
+      <div class="kv"><span class="k">URL</span><span class="v mono">meituantool://run?tasks=coupon&amp;notify=0</span></div>
+      <div class="kv"><span class="k">运行前询问</span><span class="v"><span class="sw off"></span> 关闭</span></div>
+      <button class="copy" data-url="meituantool://run?tasks=coupon&notify=0">复制 URL</button>
+    </div>
+
+    <div class="auto hot">
+      <div class="head"><b>④ 17 点抢券</b><span class="time">16:58</span></div>
+      <div class="kv"><span class="k">触发</span><span class="v">特定时间 · 每天 16:58</span></div>
+      <div class="kv"><span class="k">动作</span><span class="v">打开 URL</span></div>
+      <div class="kv"><span class="k">URL</span><span class="v mono">meituantool://run?tasks=coupon</span></div>
+      <div class="kv"><span class="k">运行前询问</span><span class="v"><span class="sw off"></span> 关闭</span></div>
+      <button class="copy" data-url="meituantool://run?tasks=coupon">复制 URL</button>
+    </div>
+
+    <div class="auto hot">
+      <div class="head"><b>⑤ 21 点抢券</b><span class="time">20:58</span></div>
+      <div class="kv"><span class="k">触发</span><span class="v">特定时间 · 每天 20:58</span></div>
+      <div class="kv"><span class="k">动作</span><span class="v">打开 URL</span></div>
+      <div class="kv"><span class="k">URL</span><span class="v mono">meituantool://run?tasks=coupon</span></div>
+      <div class="kv"><span class="k">运行前询问</span><span class="v"><span class="sw off"></span> 关闭</span></div>
+      <button class="copy" data-url="meituantool://run?tasks=coupon">复制 URL</button>
+    </div>
+
+    <div class="auto">
+      <div class="head"><b>⑥ 晚间兜底(可选)</b><span class="time">21:02</span></div>
+      <div class="kv"><span class="k">触发</span><span class="v">特定时间 · 每天 21:02</span></div>
+      <div class="kv"><span class="k">动作</span><span class="v">打开 URL</span></div>
+      <div class="kv"><span class="k">URL</span><span class="v mono">meituantool://run?notify=0</span></div>
+      <div class="kv"><span class="k">运行前询问</span><span class="v"><span class="sw off"></span> 关闭</span></div>
+      <button class="copy" data-url="meituantool://run?notify=0">复制 URL</button>
+      <div class="tip" style="margin-bottom:0">作用:21 点场结束后跑一次全流程(签到+领券+查红包库),防止当天任何环节漏掉。</div>
+    </div>
+  </div>
+
+  <!-- URL 速查 -->
+  <div class="card">
+    <h2><span class="num">4</span>URL Scheme 速查表</h2>
+    <table>
+      <tr><th style="width:52%">链接</th><th>行为</th></tr>
+      <tr><td class="url">meituantool://run</td><td>签到 + 领券全流程</td></tr>
+      <tr><td class="url">meituantool://run?tasks=sign</td><td>仅签到(领红豆/必中符/任务豆)</td></tr>
+      <tr><td class="url">meituantool://run?tasks=coupon</td><td>仅抢券(红包池+抽奖+发放)</td></tr>
+      <tr><td class="url">meituantool://run?notify=0</td><td>全流程,不弹通知</td></tr>
+    </table>
+    <button class="copy" data-url="meituantool://run">复制:全流程链接</button>
+  </div>
+
+  <!-- 排错 -->
+  <div class="card">
+    <h2><span class="num">5</span>排错(到点没执行?)</h2>
+    <table>
+      <tr><th style="width:44%">现象</th><th>原因 / 解决</th></tr>
+      <tr><td>到点弹窗等你点"运行"</td><td>"运行前询问"没关干净,两个位置都要关</td></tr>
+      <tr><td>锁屏后不执行</td><td>设置 → 通知 → 美团助手 打开"允许通知";低电量模式会延迟,充电时正常</td></tr>
+      <tr><td>执行完没通知</td><td>同上,通知权限没开;或该条 URL 带了 notify=0</td></tr>
+      <tr><td>提示"当前不在抢券时段"</td><td>正常,11/17/21 整点才开放,提前触发的会这样返回</td></tr>
+      <tr><td>账号显示 token 失效</td><td>重新抓 token:「账号」页点该账号 → 粘贴新 token,或网页登录重抓</td></tr>
+      <tr><td>多账号只跑了一半</td><td>后台时间约 30 秒,账号多时保持 App 前台或分批执行</td></tr>
+    </table>
+
+    <details>
+      <summary>手动测试某条自动化(不用等到点)</summary>
+      <ul>
+        <li>在「自动化」列表里点对应卡片 → 底部「测试」按钮,立即执行一次</li>
+        <li>或 Safari 地址栏直接输入链接回车,效果相同</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="footer">
+    美团助手 MeiTuanTool v1.0 · 接口文档见 <a href="接口与抓包.md">docs/接口与抓包.md</a><br>
+    仅供个人学习交流,请合理设置执行频率
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var url = btn.getAttribute('data-url');
+      function done() {
+        btn.textContent = '已复制 ✓';
+        btn.classList.add('ok');
+        setTimeout(function () { btn.textContent = '复制 URL'; btn.classList.remove('ok'); }, 1500);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done).catch(function () { fallback(url, done); });
+      } else {
+        fallback(url, done);
+      }
+    });
+  });
+  function fallback(text, cb) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); cb(); } catch (e) { alert('请手动复制:' + text); }
+    document.body.removeChild(ta);
+  }
+</script>
+</body>
+</html>
