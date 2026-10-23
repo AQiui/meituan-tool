@@ -169,10 +169,11 @@ actor MemberMonitor {
         }
         guard let code = json["code"] as? Int, code == 0 else {
             let msg = json["msg"] as? String ?? ""
+            let failCode = json["code"] as? Int ?? -1
             if msg.contains("登录") || msg.contains("失效") || msg.contains("过期") {
                 throw MemberError.tokenExpired
             }
-            throw MemberError.api(code, msg.isEmpty ? "查询失败" : msg)
+            throw MemberError.api(failCode, msg.isEmpty ? "查询失败" : msg)
         }
 
         var info = MemberInfo()
