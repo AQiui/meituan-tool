@@ -47,6 +47,10 @@ final class BackgroundService: NSObject {
             Task { @MainActor in AppState.shared.cancelRun() }
         }
         Task { @MainActor in
+            // 黑金会员监控:后台刷新时顺带检查,今日未签到则发通知提醒
+            if AppState.shared.settings.memberMonitorEnabled {
+                AppState.shared.memberCheck(notify: true)
+            }
             AppState.shared.run(trigger: "后台刷新", notify: true) { success in
                 task.setTaskCompleted(success: success)
             }
@@ -59,6 +63,9 @@ final class BackgroundService: NSObject {
             Task { @MainActor in AppState.shared.cancelRun() }
         }
         Task { @MainActor in
+            if AppState.shared.settings.memberMonitorEnabled {
+                AppState.shared.memberCheck(notify: true)
+            }
             AppState.shared.run(trigger: "后台处理", notify: true) { success in
                 task.setTaskCompleted(success: success)
             }

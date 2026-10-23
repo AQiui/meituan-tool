@@ -286,31 +286,13 @@ final class TaskRunner {
             }
         }
 
-        // ---------- ⓾ 黑金会员签到 / 任务中心(路径来自抓包学习配置) ----------
-        if wantMember, options.includeMemberTasks, !config.memberTasks.isEmpty {
-            let enabled = config.memberTasks.filter { $0.enabled && !$0.path.isEmpty }
-            if enabled.isEmpty {
-                await step(&report, title: "⓾ 黑金会员任务") {
-                    "未配置可用任务,请到「会员中心」抓包学习(见设置页)"
-                }
-            }
-            for task in enabled {
-                // 会员接口严格按抓包学习到的参数发送(自动补 token),不注入额外参数,避免"参数非法"
-                var params = task.bodyExtra
-                await step(&report, title: "⓾ \(task.name)") {
-                    let resp = try await client.postMember(path: task.path, params: params, token: account.token)
-                    // 成长值字段常见名兼容解析
-                    var parts: [String] = []
-                    if let growth = JSONSearch.intValue(resp.data ?? resp.object, keys: ["growthValue", "growth", "addGrowthValue", "increaseGrowth"]) {
-                        parts.append("成长值 +\(growth)")
-                    }
-                    let msg = resp.describe("")
-                    if !msg.isEmpty { parts.append(msg) }
-                    return parts.isEmpty ? "已完成" : parts.joined(separator: " · ")
-                }
-                if report.tokenExpired { return finish(report) }
-                // 任务间稍作间隔,模拟真人节奏
-                try? await Task.sleep(nanoseconds: 1_200_000_000)
+        // ---------- ⓾ 黑金会员(监控模式) ----------
+        // 实测:签到写接口 receiveAndOpUserTask 带 mtgsig 密码学校验(无签名 code=4/伪造 403),
+        // 第三方无法自动重放;读接口(会员信息/任务列表)无需签名,已在「会员检查」中全自动查询。
+        // 这里只输出说明,引导用户使用监控+提醒模式,不再尝试自动执行签到。
+        if wantMember, options.includeMemberTasks {
+            await step(&report, title: "⓾ 黑金会员监控") {
+                "签到接口有 mtgsig 签名风控,无法自动重放。请用首页「会员检查」查询状态(全自动),未签到时会本地提醒并一键跳转美团 APP"
             }
         }
 

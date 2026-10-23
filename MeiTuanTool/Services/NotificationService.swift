@@ -36,6 +36,24 @@ final class NotificationService {
         post(content)
     }
 
+    /// 黑金会员今日未签到提醒
+    func postSignReminder(_ status: MemberMonitor.Status) {
+        let content = UNMutableNotificationContent()
+        content.title = "黑金会员今日还没签到"
+        var lines: [String] = []
+        if !status.levelName.isEmpty {
+            lines.append("\(status.levelName) \(status.levelShow)-\(status.subLevel) · 成长值 \(status.growthValue)")
+        }
+        if !status.signTaskTitle.isEmpty {
+            lines.append("「\(status.signTaskTitle)」\(status.signProgress) 今日奖励待领取")
+        }
+        content.body = lines.isEmpty
+            ? "打开美团 APP 会员中心完成签到,成长值 +1"
+            : lines.joined(separator: "\n") + "\n点开本 APP 一键跳转美团"
+        content.sound = .default
+        post(content)
+    }
+
     private func post(_ content: UNMutableNotificationContent) {
         let request = UNNotificationRequest(identifier: UUID().uuidString,
                                             content: content,

@@ -32,7 +32,7 @@ enum URLSchemeRouter {
             ("meituantool://run", "签到 + 领券全流程"),
             ("meituantool://run?tasks=sign", "仅签到领红豆"),
             ("meituantool://run?tasks=coupon", "仅抢天天神券"),
-            ("meituantool://run?tasks=member", "黑金会员签到/任务")
+            ("meituantool://run?tasks=member", "黑金会员状态检查")
         ]
     }
 }

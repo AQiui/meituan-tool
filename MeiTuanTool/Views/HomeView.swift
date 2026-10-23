@@ -16,6 +16,11 @@ struct HomeView: View {
                     statsCard
                     runButtons
                     quickOptions
+                    if appState.memberChecking {
+                        memberCheckingCard
+                    } else if let member = appState.memberStatus {
+                        memberStatusCard(member)
+                    }
                     if appState.isRunning {
                         runningCard
                     }
@@ -115,15 +120,15 @@ struct HomeView: View {
                 }
                 .disabled(appState.isRunning || appState.accounts.isEmpty)
 
-                Button(action: { appState.run(scope: .member) }) {
-                    Text("会员任务")
+                Button(action: { appState.memberCheck(notify: true) }) {
+                    Text("会员检查")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                         .background(Theme.card)
                         .foregroundColor(.primary)
                         .cornerRadius(12)
                 }
-                .disabled(appState.isRunning || appState.accounts.isEmpty)
+                .disabled(appState.memberChecking || !appState.memberCredentialReady)
             }
 
             if appState.isRunning {
@@ -151,15 +156,115 @@ struct HomeView: View {
                 get: { appState.settings.usePropIfAvailable },
                 set: { v in appState.updateSettings { $0.usePropIfAvailable = v } }
             ))
-            Toggle("包含黑金会员任务(签到领成长值)", isOn: Binding(
-                get: { appState.settings.includeMemberTasks },
-                set: { v in appState.updateSettings { $0.includeMemberTasks = v } }
+            Toggle("黑金会员监控(未签到时提醒)", isOn: Binding(
+                get: { appState.settings.memberMonitorEnabled },
+                set: { v in appState.updateSettings { $0.memberMonitorEnabled = v } }
             ))
         }
         .font(.subheadline)
         .padding()
         .background(Theme.card)
         .cornerRadius(14)
+    }
+
+    // MARK: 会员状态
+
+    private var memberCheckingCard: some View {
+        HStack(spacing: 12) {
+            ProgressView()
+            Text("正在查询黑金会员状态…")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Spacer()
+        }
+        .padding()
+        .background(Theme.card)
+        .cornerRadius(14)
+    }
+
+    private func memberStatusCard(_ status: MemberMonitor.Status) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "crown.fill")
+                    .foregroundColor(Theme.yellow)
+                Text(status.ok ? "黑金会员" : "会员查询失败")
+                    .font(.headline)
+                Spacer()
+                if let at = appState.memberLastCheckAt {
+                    Text(TimeFormat.string(at))
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+            if status.ok {
+                HStack(spacing: 0) {
+                    memberStat(title: "等级", value: "\(status.levelShow)-\(status.subLevel)")
+                    cellDivider
+                    memberStat(title: "成长值", value: "\(status.growthValue)")
+                    cellDivider
+                    memberStat(title: "本级上限", value: "\(status.levelEnd)")
+                }
+                HStack(spacing: 6) {
+                    Image(systemName: status.signedToday ? "checkmark.seal.fill" : "clock.badge.exclamationmark")
+                        .foregroundColor(status.signedToday ? Theme.green : Theme.red)
+                    Text(status.signSummary)
+                        .font(.subheadline)
+                        .foregroundColor(status.signedToday ? .primary : Theme.red)
+                }
+                if !status.signedToday {
+                    Button(action: { openMeituan() }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.up.forward.app")
+                            Text("打开美团 APP 签到")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(Theme.yellow)
+                        .foregroundColor(.black)
+                        .cornerRadius(10)
+                    }
+                }
+                if !status.otherTasks.isEmpty {
+                    VStack(alignment: .leading, spacing: 2) {
+                        ForEach(status.otherTasks, id: \.self) { task in
+                            Text("· \(task)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+            } else {
+                Text(status.error ?? "未知错误")
+                    .font(.caption)
+                    .foregroundColor(Theme.red)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.card)
+        .cornerRadius(14)
+    }
+
+    private func memberStat(title: String, value: String) -> some View {
+        VStack(spacing: 4) {
+            Text(value)
+                .font(.headline)
+            Text(title)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    /// 跳转美团 APP(会员中心为原生页面,URL Scheme 打开首页后由用户进入)
+    private func openMeituan() {
+        guard let url = URL(string: "imeituan://www.meituan.com/home") else { return }
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        } else if let web = URL(string: "https://i.meituan.com/") {
+            UIApplication.shared.open(web)
+        }
     }
 
     // MARK: 执行中

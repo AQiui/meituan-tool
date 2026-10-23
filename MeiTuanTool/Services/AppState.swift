@@ -17,6 +17,11 @@ final class AppState: ObservableObject {
     @Published var reports: [AccountReport] = []
     @Published var lastRunAt: Date?
 
+    // MARK: - 会员监控状态
+    @Published var memberStatus: MemberMonitor.Status?
+    @Published var memberChecking = false
+    @Published var memberLastCheckAt: Date?
+
     // MARK: - 存储
     private let accountStore = AccountStore()
     private let logStore = LogStore()
@@ -104,6 +109,50 @@ final class AppState: ObservableObject {
         logs.filter { Calendar.current.isDateInToday($0.date) }.count
     }
 
+    // MARK: - 黑金会员监控
+
+    /// 会员凭证(从设置读取)
+    var memberCredential: MemberMonitor.Credential {
+        MemberMonitor.Credential(cookie: settings.memberCookie,
+                                 token: settings.memberToken,
+                                 userId: settings.memberUserId)
+    }
+
+    /// 会员凭证是否已配置完整
+    var memberCredentialReady: Bool {
+        !settings.memberCookie.isEmpty && !settings.memberToken.isEmpty && !settings.memberUserId.isEmpty
+    }
+
+    /// 查询会员状态;发现今日未签到且 notify=true 时发本地通知提醒
+    func memberCheck(notify: Bool = false) {
+        guard !memberChecking else { return }
+        guard memberCredentialReady else {
+            progressText = "请先在设置页导入会员抓包凭证"
+            return
+        }
+        memberChecking = true
+        progressText = "正在查询黑金会员状态…"
+        let cred = memberCredential
+        Task { [weak self] in
+            guard let self else { return }
+            let monitor = MemberMonitor()
+            let status = await monitor.fetchStatus(cred)
+            await MainActor.run {
+                self.memberChecking = false
+                self.memberStatus = status
+                self.memberLastCheckAt = Date()
+                if status.ok {
+                    self.progressText = "会员状态: \(status.growthSummary) · \(status.signSummary)"
+                    if notify && !status.signedToday {
+                        NotificationService.shared.postSignReminder(status)
+                    }
+                } else {
+                    self.progressText = "会员查询失败: \(status.error ?? "未知错误")"
+                }
+            }
+        }
+    }
+
     /// 一键执行
     /// - Parameters:
     ///   - scope: 执行范围
@@ -185,6 +234,15 @@ final class AppState: ObservableObject {
     // MARK: - URL Scheme 触发(快捷指令自动化)
 
     func runFromScheme(_ request: SchemeRequest) {
+        // 会员 scope 不做神券流程,只做会员状态检查(签到写接口有签名风控,无法自动重放)
+        if request.scope == .member {
+            BackgroundService.shared.beginBackgroundTask()
+            memberCheck(notify: request.notify)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+                BackgroundService.shared.endBackgroundTask()
+            }
+            return
+        }
         BackgroundService.shared.beginBackgroundTask()
         run(scope: request.scope, trigger: "快捷指令", notify: request.notify) { _ in
             BackgroundService.shared.endBackgroundTask()
