@@ -258,8 +258,8 @@ struct AddMemberTaskSheet: View {
     init(request: SniffedRequest, onSave: @escaping (String, [String: String]) -> Void) {
         self.request = request
         self.onSave = onSave
-        _name = State(initialValue: guessName(request))
-        _pairs = State(initialValue: parsePairs(request.body))
+        _name = State(initialValue: Self.guessName(request))
+        _pairs = State(initialValue: Self.parsePairs(request.body))
     }
 
     var body: some View {
