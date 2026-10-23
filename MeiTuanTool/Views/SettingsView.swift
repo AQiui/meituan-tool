@@ -5,6 +5,7 @@ struct SettingsView: View {
     @State private var showShare = false
     @State private var shareItems: [Any] = []
     @State private var showCopied = false
+    @State private var showMemberCenter = false
 
     private var scopeBinding: Binding<String> {
         Binding(
@@ -19,6 +20,7 @@ struct SettingsView: View {
                 notificationSection
                 automationSection
                 strategySection
+                memberSection
                 configSection
                 dataSection
                 aboutSection
@@ -26,6 +28,48 @@ struct SettingsView: View {
             .navigationTitle("设置")
             .sheet(isPresented: $showShare) {
                 ShareSheet(items: shareItems)
+            }
+            .sheet(isPresented: $showMemberCenter) {
+                MemberCenterView()
+                    .environmentObject(appState)
+            }
+        }
+    }
+
+    // MARK: 黑金会员任务
+
+    private var memberSection: some View {
+        Section(header: Text("黑金会员任务"),
+                footer: Text("美团会员(成长值)签到/任务接口未公开,首次使用需在「会员中心」抓包学习:打开页面 → 点一次签到 → 添加为任务。路径保存在 endpoints.json,可随时改。")) {
+            Toggle("执行黑金会员任务", isOn: Binding(
+                get: { appState.settings.includeMemberTasks },
+                set: { v in appState.updateSettings { $0.includeMemberTasks = v } }
+            ))
+            Button("会员中心抓包学习") { showMemberCenter = true }
+            infoRow("会员接口域名", appState.config.memberBaseURL)
+            infoRow("已配置会员任务", "\(appState.config.memberTasks.count) 个")
+            ForEach(appState.config.memberTasks) { task in
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(task.name)
+                            .font(.subheadline)
+                        Text(task.path)
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                    Spacer()
+                    Button(role: .destructive) {
+                        var config = appState.config
+                        config.memberTasks.removeAll { $0.id == task.id }
+                        config.saveToDocuments()
+                        appState.reloadConfig()
+                    } label: {
+                        Image(systemName: "trash")
+                            .foregroundColor(Theme.red)
+                    }
+                    .buttonStyle(.borderless)
+                }
             }
         }
     }
@@ -91,6 +135,7 @@ struct SettingsView: View {
                 Text("签到 + 领券").tag("all")
                 Text("仅签到").tag("sign")
                 Text("仅抢券").tag("coupon")
+                Text("黑金会员任务").tag("member")
             }
             Toggle("随机城市定位", isOn: Binding(
                 get: { appState.settings.useRandomCity },

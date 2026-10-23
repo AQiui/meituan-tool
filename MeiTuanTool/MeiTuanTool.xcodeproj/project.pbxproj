@@ -32,6 +32,7 @@
 		F4BD222F7DF938C112B72632 /* Views/LoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4816A2362818F1A315D614 /* Views/LoginWebView.swift */; };
 		BFFDA8A4662EDAFAF1EA553D /* Views/LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39D278E188753652B7C2329 /* Views/LogsView.swift */; };
 		0366047E1EAD5CC5EA2D8838 /* Views/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A190201E6D76FCFD340ACF /* Views/SettingsView.swift */; };
+		A1B2C3D4E5F60718293A4B5C /* Views/MemberWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5D /* Views/MemberWebView.swift */; };
 		C2431C88DBC4EF8A7AC56A7A /* endpoints.json in Resources */ = {isa = PBXBuildFile; fileRef = A42F6EA0B301B84F793D7B64 /* endpoints.json */; };
 		5DDBF56ADE2A3FA417AF0D28 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DB7571B8334F5E7680A9B20 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -63,6 +64,7 @@
 		5D4816A2362818F1A315D614 /* Views/LoginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWebView.swift; sourceTree = "<group>"; };
 		F39D278E188753652B7C2329 /* Views/LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		D8A190201E6D76FCFD340ACF /* Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5D /* Views/MemberWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberWebView.swift; sourceTree = "<group>"; };
 		A42F6EA0B301B84F793D7B64 /* endpoints.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = endpoints.json; sourceTree = "<group>"; };
 		0DB7571B8334F5E7680A9B20 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F6C49E4434E4AB56F89617A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				5D4816A2362818F1A315D614,
 				F39D278E188753652B7C2329,
 				D8A190201E6D76FCFD340ACF,
+				A1B2C3D4E5F60718293A4B5D,
 			);
 			};
 		887A6F90336FF23D95C3914B /* Resources */ = {
@@ -253,6 +256,7 @@
 				F4BD222F7DF938C112B72632 /* Views/LoginWebView.swift in Sources */,
 				BFFDA8A4662EDAFAF1EA553D /* Views/LogsView.swift in Sources */,
 				0366047E1EAD5CC5EA2D8838 /* Views/SettingsView.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5C /* Views/MemberWebView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

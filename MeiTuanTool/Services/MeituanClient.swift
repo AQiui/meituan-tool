@@ -72,9 +72,16 @@ actor MeituanClient {
         return try await post(path: path, params: params, token: token)
     }
 
+    /// 会员体系请求:走 memberBaseURL 域名,其余逻辑与通用 POST 一致
+    func postMember(path: String, params: [String: String], token: String) async throws -> APIResponse {
+        try await post(path: path, params: params, token: token, baseURL: config.memberBaseURL)
+    }
+
     /// 通用 form POST(带一次网络重试)
-    func post(path: String, params: [String: String], token: String, retry: Int = 1) async throws -> APIResponse {
-        guard let url = URL(string: config.baseURL + path) else { throw MeituanError.badURL }
+    func post(path: String, params: [String: String], token: String,
+              baseURL: String? = nil, retry: Int = 1) async throws -> APIResponse {
+        let base = baseURL ?? config.baseURL
+        guard let url = URL(string: base + path) else { throw MeituanError.badURL }
 
         var body = params
         body["token"] = token
@@ -94,7 +101,7 @@ actor MeituanClient {
         } catch {
             if retry > 0, !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 800_000_000)
-                return try await post(path: path, params: params, token: token, retry: retry - 1)
+                return try await post(path: path, params: params, token: token, baseURL: baseURL, retry: retry - 1)
             }
             throw MeituanError.network(error.localizedDescription)
         }
@@ -103,13 +110,17 @@ actor MeituanClient {
         if http.statusCode != 200 {
             if retry > 0, http.statusCode >= 500, !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 800_000_000)
-                return try await post(path: path, params: params, token: token, retry: retry - 1)
+                return try await post(path: path, params: params, token: token, baseURL: baseURL, retry: retry - 1)
             }
             throw MeituanError.http(http.statusCode)
         }
 
         let raw = String(data: data, encoding: .utf8) ?? ""
         guard let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else {
+            // 会员接口可能返回非 JSON(如 HTML 登录跳转),原文提示比解析错误更有用
+            if raw.contains("<html") || raw.contains("登录") {
+                throw MeituanError.tokenExpired(msg: "会员接口返回登录页,token 可能未覆盖会员体系")
+            }
             throw MeituanError.badResponse
         }
 

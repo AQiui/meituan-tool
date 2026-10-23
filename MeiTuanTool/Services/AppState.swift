@@ -94,7 +94,8 @@ final class AppState: ObservableObject {
             usePropIfAvailable: settings.usePropIfAvailable,
             smallRedToBeanThreshold: settings.smallRedToBeanThreshold,
             exchangeBeanThreshold: settings.exchangeBeanThreshold,
-            includeExtraTasks: settings.includeExtraTasks
+            includeExtraTasks: settings.includeExtraTasks,
+            includeMemberTasks: settings.includeMemberTasks
         )
     }
 

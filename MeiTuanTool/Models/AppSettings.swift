@@ -19,6 +19,8 @@ struct AppSettings: Codable, Equatable {
     var exchangeBeanThreshold: Int = 1800
     /// 执行 endpoints.json 中用户自定义的 extraTasks
     var includeExtraTasks: Bool = true
+    /// 执行黑金会员签到/任务(路径需先在 App 内「会员中心」抓包学习)
+    var includeMemberTasks: Bool = true
 
     static let `default` = AppSettings()
 

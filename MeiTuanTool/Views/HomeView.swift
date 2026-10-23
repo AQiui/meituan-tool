@@ -115,15 +115,25 @@ struct HomeView: View {
                 }
                 .disabled(appState.isRunning || appState.accounts.isEmpty)
 
-                if appState.isRunning {
-                    Button(action: { appState.cancelRun() }) {
-                        Text("取消")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Theme.card)
-                            .foregroundColor(Theme.red)
-                            .cornerRadius(12)
-                    }
+                Button(action: { appState.run(scope: .member) }) {
+                    Text("会员任务")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Theme.card)
+                        .foregroundColor(.primary)
+                        .cornerRadius(12)
+                }
+                .disabled(appState.isRunning || appState.accounts.isEmpty)
+            }
+
+            if appState.isRunning {
+                Button(action: { appState.cancelRun() }) {
+                    Text("取消执行")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Theme.card)
+                        .foregroundColor(Theme.red)
+                        .cornerRadius(12)
                 }
             }
         }
@@ -140,6 +150,10 @@ struct HomeView: View {
             Toggle("有必中符时自动使用", isOn: Binding(
                 get: { appState.settings.usePropIfAvailable },
                 set: { v in appState.updateSettings { $0.usePropIfAvailable = v } }
+            ))
+            Toggle("包含黑金会员任务(签到领成长值)", isOn: Binding(
+                get: { appState.settings.includeMemberTasks },
+                set: { v in appState.updateSettings { $0.includeMemberTasks = v } }
             ))
         }
         .font(.subheadline)

@@ -1,7 +1,8 @@
 {
-  "version": 1,
-  "comment": "美团天天神券接口配置。美团调整接口时,只需修改本文件(放入 App 沙盒 Documents 目录即可覆盖内置配置),无需改代码。字段说明见 docs/接口与抓包.md",
+  "version": 2,
+  "comment": "美团天天神券 + 黑金会员接口配置。美团调整接口时,只需修改本文件(放入 App 沙盒 Documents 目录即可覆盖内置配置),无需改代码。字段说明见 docs/接口与抓包.md",
   "baseURL": "https://i.waimai.meituan.com",
+  "memberBaseURL": "https://member.meituan.com",
   "parActivityId": "Gh1tkq-wvFU2xEP_ZPzHPQ",
   "userAgent": "MeituanGroup/11.9.208",
   "paths": {
@@ -16,5 +17,6 @@
     "myReward": "/cfeplay/playcenter/batchgrabred/myreward",
     "exchange": "/cfeplay/playcenter/batchgrabred/exchange"
   },
-  "extraTasks": []
+  "extraTasks": [],
+  "memberTasks": []
 }

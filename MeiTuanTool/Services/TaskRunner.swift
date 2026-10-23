@@ -4,12 +4,14 @@ enum RunScope: String, Codable {
     case all = "all"
     case sign = "sign"
     case coupon = "coupon"
+    case member = "member"
 
     var title: String {
         switch self {
         case .all: return "签到 + 领券全流程"
         case .sign: return "仅签到"
         case .coupon: return "仅抢券"
+        case .member: return "黑金会员任务"
         }
     }
 }
@@ -17,6 +19,7 @@ enum RunScope: String, Codable {
 /// 任务编排器:按开源脚本(meituan-shenquan)验证过的接口流程执行
 /// ①签到领红豆 → ②签到领必中符 → ③每日任务红豆 → ④查询红包池
 /// → ⑤必中符抽奖 → ⑥发放到账/小额转红豆 → ⑦查询红包库 → ⑧按需兑换 → ⑨自定义任务
+/// → ⓾ 黑金会员签到/任务(路径由 App 内「会员中心」抓包学习配置)
 final class TaskRunner {
     private let client: MeituanClient
     private let config: EndpointConfig
@@ -34,6 +37,8 @@ final class TaskRunner {
         var smallRedToBeanThreshold: Int = 500
         var exchangeBeanThreshold: Int = 1800
         var includeExtraTasks: Bool = true
+        /// 执行黑金会员任务(需先在「会员中心」抓包学习配置路径)
+        var includeMemberTasks: Bool = true
     }
 
     typealias ProgressHandler = @MainActor (String) async -> Void
@@ -101,6 +106,7 @@ final class TaskRunner {
 
         let wantSign = options.scope == .all || options.scope == .sign
         let wantCoupon = options.scope == .all || options.scope == .coupon
+        let wantMember = options.scope == .all || options.scope == .member
 
         // ---------- ① 签到领红豆(同时校验 token) ----------
         if wantSign {
@@ -277,6 +283,34 @@ final class TaskRunner {
                     return resp.msg.isEmpty ? "已完成" : resp.msg
                 }
                 if report.tokenExpired { return finish(report) }
+            }
+        }
+
+        // ---------- ⓾ 黑金会员签到 / 任务中心(路径来自抓包学习配置) ----------
+        if wantMember, options.includeMemberTasks, !config.memberTasks.isEmpty {
+            let enabled = config.memberTasks.filter { $0.enabled && !$0.path.isEmpty }
+            if enabled.isEmpty {
+                await step(&report, title: "⓾ 黑金会员任务") {
+                    "未配置可用任务,请到「会员中心」抓包学习(见设置页)"
+                }
+            }
+            for task in enabled {
+                // 会员接口严格按抓包学习到的参数发送(自动补 token),不注入额外参数,避免"参数非法"
+                var params = task.bodyExtra
+                await step(&report, title: "⓾ \(task.name)") {
+                    let resp = try await client.postMember(path: task.path, params: params, token: account.token)
+                    // 成长值字段常见名兼容解析
+                    var parts: [String] = []
+                    if let growth = JSONSearch.intValue(resp.data ?? resp.object, keys: ["growthValue", "growth", "addGrowthValue", "increaseGrowth"]) {
+                        parts.append("成长值 +\(growth)")
+                    }
+                    let msg = resp.describe("")
+                    if !msg.isEmpty { parts.append(msg) }
+                    return parts.isEmpty ? "已完成" : parts.joined(separator: " · ")
+                }
+                if report.tokenExpired { return finish(report) }
+                // 任务间稍作间隔,模拟真人节奏
+                try? await Task.sleep(nanoseconds: 1_200_000_000)
             }
         }
 
