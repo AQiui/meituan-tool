@@ -82,7 +82,6 @@
 /* Begin PBXGroup section */
 		518DA81DB9B99529C0C0AEBE /* MeiTuanTool */ = {
 			isa = PBXGroup;
-			path = MeiTuanTool;
 			children = (
 				987E170008FC9774A711C3FB /* MeiTuanToolApp.swift */,
 				48E0F96C682DC1558B12A4D3 /* ContentView.swift */,
@@ -92,6 +91,7 @@
 				38DF21AEF4612506D6BE5CBE /* Views */,
 				887A6F90336FF23D95C3914B /* Resources */,
 			);
+			sourceTree = "<group>";
 		};
 		A1C86A29E589D48EC70B6A32 /* Models */ = {
 			isa = PBXGroup;
