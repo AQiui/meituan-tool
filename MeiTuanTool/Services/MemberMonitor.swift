@@ -177,18 +177,22 @@ actor MemberMonitor {
         }
 
         var info = MemberInfo()
-        if let data = json["data"] as? [String: Any],
-           let basic = data["currentMemberLevelBasicInfoBO"] as? [String: Any] {
-            info.levelName = basic["memberName"] as? String ?? ""
-            info.levelShow = basic["memberLevelShow"] as? String ?? ""
-            info.subLevel = basic["memberSubLevel"] as? Int ?? 0
-            info.growthValue = Self.intValue(basic, keys: ["growthValue", "currentGrowthValue"])
-            info.levelBegin = basic["memberSubLevelBeginGrowthValue"] as? Int
-                ?? basic["beginGrowthValue"] as? Int ?? 0
-            info.levelEnd = basic["memberSubLevelEndGrowthValue"] as? Int
-                ?? basic["endGrowthValue"] as? Int ?? 0
-            if let next = data["nextMemberLevelBasicInfoBO"] as? [String: Any] {
-                info.nextLevelName = next["memberName"] as? String ?? ""
+        if let data = json["data"] as? [String: Any] {
+            // 成长值在独立 BO 里(不在等级信息里)
+            if let gv = data["currentGrowthValueBO"] as? [String: Any] {
+                info.growthValue = Self.intValue(gv, keys: ["growthValue", "currentGrowthValue"])
+            }
+            if let basic = data["currentMemberLevelBasicInfoBO"] as? [String: Any] {
+                info.levelName = basic["memberName"] as? String ?? ""
+                info.levelShow = basic["memberLevelShow"] as? String ?? ""
+                info.subLevel = basic["memberSubLevel"] as? Int ?? 0
+                info.levelBegin = basic["memberSubLevelBeginGrowthValue"] as? Int
+                    ?? basic["beginGrowthValue"] as? Int ?? 0
+                info.levelEnd = basic["memberSubLevelEndGrowthValue"] as? Int
+                    ?? basic["endGrowthValue"] as? Int ?? 0
+                if let next = data["nextMemberLevelBasicInfoBO"] as? [String: Any] {
+                    info.nextLevelName = next["memberName"] as? String ?? ""
+                }
             }
         }
         return info
