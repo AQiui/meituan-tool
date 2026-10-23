@@ -135,11 +135,11 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 6) {
             Toggle("随机城市定位(扩大红包池覆盖)", isOn: Binding(
                 get: { appState.settings.useRandomCity },
-                set: { appState.updateSettings { $0.useRandomCity = $1 } }
+                set: { v in appState.updateSettings { $0.useRandomCity = v } }
             ))
             Toggle("有必中符时自动使用", isOn: Binding(
                 get: { appState.settings.usePropIfAvailable },
-                set: { appState.updateSettings { $0.usePropIfAvailable = $1 } }
+                set: { v in appState.updateSettings { $0.usePropIfAvailable = v } }
             ))
         }
         .font(.subheadline)
@@ -194,8 +194,7 @@ struct HomeView: View {
     private var tipsCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             Label("精确定时自动化", systemImage: "clock.fill")
-                .font(.subheadline)
-                .fontWeight(.semibold)
+                .font(.system(size: 15, weight: .semibold))
                 .foregroundColor(Theme.red)
             Text("iOS 不允许 App 常驻后台。每天 11:00 / 17:00 / 21:00 抢券,建议用「快捷指令」创建个人自动化,添加「打开 URL」动作,内容填:")
                 .font(.caption)

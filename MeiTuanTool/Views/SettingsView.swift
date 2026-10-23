@@ -9,7 +9,7 @@ struct SettingsView: View {
     private var scopeBinding: Binding<String> {
         Binding(
             get: { appState.settings.defaultScope },
-            set: { appState.updateSettings { $0.defaultScope = $1 } }
+            set: { v in appState.updateSettings { $0.defaultScope = v } }
         )
     }
 
@@ -36,7 +36,7 @@ struct SettingsView: View {
         Section(header: Text("通知"), footer: Text("执行完成后通过本地通知推送各账号结果摘要。")) {
             Toggle("完成后发送通知", isOn: Binding(
                 get: { appState.settings.notifyOnFinish },
-                set: { appState.updateSettings { $0.notifyOnFinish = $1 } }
+                set: { v in appState.updateSettings { $0.notifyOnFinish = v } }
             ))
             Button("发送测试通知") {
                 NotificationService.shared.post(title: "美团助手", body: "测试通知:签到 + 领券服务运行正常")
@@ -50,9 +50,9 @@ struct SettingsView: View {
         Section(header: Text("定时自动化"), footer: Text("iOS 不允许 App 长期后台运行,系统调度时机不固定;每天 11:00 / 17:00 / 21:00 抢券建议使用快捷指令个人自动化。")) {
             Toggle("允许后台刷新", isOn: Binding(
                 get: { appState.settings.backgroundRefresh },
-                set: {
-                    appState.updateSettings { $0.backgroundRefresh = $1 }
-                    if $1 { BackgroundService.shared.scheduleNextRefresh() }
+                set: { v in
+                    appState.updateSettings { $0.backgroundRefresh = v }
+                    if v { BackgroundService.shared.scheduleNextRefresh() }
                 }
             ))
             VStack(alignment: .leading, spacing: 8) {
@@ -94,12 +94,12 @@ struct SettingsView: View {
             }
             Toggle("随机城市定位", isOn: Binding(
                 get: { appState.settings.useRandomCity },
-                set: { appState.updateSettings { $0.useRandomCity = $1 } }
+                set: { v in appState.updateSettings { $0.useRandomCity = v } }
             ))
             if !appState.settings.useRandomCity {
                 Picker("默认城市", selection: Binding(
                     get: { appState.settings.defaultCityName },
-                    set: { appState.updateSettings { $0.defaultCityName = $1 } }
+                    set: { v in appState.updateSettings { $0.defaultCityName = v } }
                 )) {
                     ForEach(Cities.all.map { $0.name }, id: \.self) { city in
                         Text(city).tag(city)
@@ -108,16 +108,16 @@ struct SettingsView: View {
             }
             Toggle("有必中符时自动使用", isOn: Binding(
                 get: { appState.settings.usePropIfAvailable },
-                set: { appState.updateSettings { $0.usePropIfAvailable = $1 } }
+                set: { v in appState.updateSettings { $0.usePropIfAvailable = v } }
             ))
             Stepper("小额券转红豆阈值:\(appState.settings.smallRedToBeanThreshold / 100) 元",
                     value: Binding(
                         get: { appState.settings.smallRedToBeanThreshold },
-                        set: { appState.updateSettings { $0.smallRedToBeanThreshold = $1 } }
+                        set: { v in appState.updateSettings { $0.smallRedToBeanThreshold = v } }
                     ), in: 100...1000, step: 100)
             Stepper(value: Binding(
                 get: { appState.settings.exchangeBeanThreshold },
-                set: { appState.updateSettings { $0.exchangeBeanThreshold = $1 } }
+                set: { v in appState.updateSettings { $0.exchangeBeanThreshold = v } }
             ), in: 0...5000, step: 100) {
                 Text(appState.settings.exchangeBeanThreshold == 0
                      ? "自动兑换必中符:关闭"
@@ -125,7 +125,7 @@ struct SettingsView: View {
             }
             Toggle("执行自定义任务(extraTasks)", isOn: Binding(
                 get: { appState.settings.includeExtraTasks },
-                set: { appState.updateSettings { $0.includeExtraTasks = $1 } }
+                set: { v in appState.updateSettings { $0.includeExtraTasks = v } }
             ))
         }
     }
