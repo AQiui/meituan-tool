@@ -39,30 +39,30 @@
 /* Begin PBXFileReference section */
 		987E170008FC9774A711C3FB /* MeiTuanToolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeiTuanToolApp.swift; sourceTree = "<group>"; };
 		48E0F96C682DC1558B12A4D3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		83A47738442302E641B53D32 /* Models/Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Account.swift; sourceTree = "<group>"; };
-		18DE272844FDEA137EB0A5AF /* Models/AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/AppSettings.swift; sourceTree = "<group>"; };
-		B5EF812300FD79CE93660349 /* Models/EndpointConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/EndpointConfig.swift; sourceTree = "<group>"; };
-		541EB340B6686BD2E19F851C /* Models/TaskReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/TaskReport.swift; sourceTree = "<group>"; };
-		3CFA61D5B2316BD30AD69778 /* Services/AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/AccountStore.swift; sourceTree = "<group>"; };
-		11B628932D248957CD6FF419 /* Services/AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/AppState.swift; sourceTree = "<group>"; };
-		DD774C1329B5C3F5B7338ADB /* Services/BackgroundService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/BackgroundService.swift; sourceTree = "<group>"; };
-		BD282A60FC75D54A374C32C9 /* Services/LogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/LogStore.swift; sourceTree = "<group>"; };
-		BB56E682EE0F9425354EACF4 /* Services/MeituanClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/MeituanClient.swift; sourceTree = "<group>"; };
-		CC31394B478F0B9F2FFDA19A /* Services/NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/NotificationService.swift; sourceTree = "<group>"; };
-		871C6C0804A84E52D8A1E5CA /* Services/SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SettingsStore.swift; sourceTree = "<group>"; };
-		955EDA1D6F28F7E6F18966BC /* Services/TaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/TaskRunner.swift; sourceTree = "<group>"; };
-		34134EE763F4D515D0CD7BD7 /* Utilities/Cities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/Cities.swift; sourceTree = "<group>"; };
-		F78261C0D1F4EDA6D0672F50 /* Utilities/FormBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/FormBody.swift; sourceTree = "<group>"; };
-		5D43CBA141597F38D009033C /* Utilities/JSONEncoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/JSONEncoding.swift; sourceTree = "<group>"; };
-		157B2B135BF64CFF082E1A88 /* Utilities/JSONPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/JSONPath.swift; sourceTree = "<group>"; };
-		799A1D719D636B229D54145F /* Utilities/ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/ShareSheet.swift; sourceTree = "<group>"; };
-		8C98F06BDA0F37BC0DBE1C22 /* Utilities/Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/Theme.swift; sourceTree = "<group>"; };
-		7674B847F60ABD13F5310931 /* Utilities/URLSchemeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/URLSchemeRouter.swift; sourceTree = "<group>"; };
-		ACC780D4E2B54CA3624138FA /* Views/AccountsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/AccountsView.swift; sourceTree = "<group>"; };
-		F4A35EEBB48575413F754CDF /* Views/HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/HomeView.swift; sourceTree = "<group>"; };
-		5D4816A2362818F1A315D614 /* Views/LoginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/LoginWebView.swift; sourceTree = "<group>"; };
-		F39D278E188753652B7C2329 /* Views/LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/LogsView.swift; sourceTree = "<group>"; };
-		D8A190201E6D76FCFD340ACF /* Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/SettingsView.swift; sourceTree = "<group>"; };
+		83A47738442302E641B53D32 /* Models/Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		18DE272844FDEA137EB0A5AF /* Models/AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		B5EF812300FD79CE93660349 /* Models/EndpointConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointConfig.swift; sourceTree = "<group>"; };
+		541EB340B6686BD2E19F851C /* Models/TaskReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskReport.swift; sourceTree = "<group>"; };
+		3CFA61D5B2316BD30AD69778 /* Services/AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
+		11B628932D248957CD6FF419 /* Services/AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		DD774C1329B5C3F5B7338ADB /* Services/BackgroundService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundService.swift; sourceTree = "<group>"; };
+		BD282A60FC75D54A374C32C9 /* Services/LogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogStore.swift; sourceTree = "<group>"; };
+		BB56E682EE0F9425354EACF4 /* Services/MeituanClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeituanClient.swift; sourceTree = "<group>"; };
+		CC31394B478F0B9F2FFDA19A /* Services/NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		871C6C0804A84E52D8A1E5CA /* Services/SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		955EDA1D6F28F7E6F18966BC /* Services/TaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRunner.swift; sourceTree = "<group>"; };
+		34134EE763F4D515D0CD7BD7 /* Utilities/Cities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cities.swift; sourceTree = "<group>"; };
+		F78261C0D1F4EDA6D0672F50 /* Utilities/FormBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormBody.swift; sourceTree = "<group>"; };
+		5D43CBA141597F38D009033C /* Utilities/JSONEncoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONEncoding.swift; sourceTree = "<group>"; };
+		157B2B135BF64CFF082E1A88 /* Utilities/JSONPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONPath.swift; sourceTree = "<group>"; };
+		799A1D719D636B229D54145F /* Utilities/ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		8C98F06BDA0F37BC0DBE1C22 /* Utilities/Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		7674B847F60ABD13F5310931 /* Utilities/URLSchemeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSchemeRouter.swift; sourceTree = "<group>"; };
+		ACC780D4E2B54CA3624138FA /* Views/AccountsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsView.swift; sourceTree = "<group>"; };
+		F4A35EEBB48575413F754CDF /* Views/HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		5D4816A2362818F1A315D614 /* Views/LoginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWebView.swift; sourceTree = "<group>"; };
+		F39D278E188753652B7C2329 /* Views/LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
+		D8A190201E6D76FCFD340ACF /* Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A42F6EA0B301B84F793D7B64 /* endpoints.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = endpoints.json; sourceTree = "<group>"; };
 		0DB7571B8334F5E7680A9B20 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F6C49E4434E4AB56F89617A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -266,7 +266,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = gnu++20;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -315,7 +315,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = -Onone;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -326,7 +326,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = gnu++20;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -364,10 +364,10 @@
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf-with-dsym;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				SWIFT_OPTIMIZATION_LEVEL = -O;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -378,17 +378,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = Resources/Info.plist;
+				INFOPLIST_FILE = "Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.meituan.tool;
-				PRODUCT_NAME = $(TARGET_NAME);
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Debug;
@@ -399,17 +399,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = Resources/Info.plist;
+				INFOPLIST_FILE = "Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.meituan.tool;
-				PRODUCT_NAME = $(TARGET_NAME);
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
