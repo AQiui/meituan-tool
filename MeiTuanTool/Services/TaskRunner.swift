@@ -76,13 +76,26 @@ final class TaskRunner {
             city = Cities.named(options.fixedCityName ?? "") ?? Cities.fallback
         }
 
-        // 通用定位参数
+        // 通用定位参数(微度整型:美团接口要求去掉小数点的纬度/经度,如成都 30657401,104065827)
+        func microLat() -> String { String(Int((city.latitude * 1_000_000).rounded())) }
+        func microLng() -> String { String(Int((city.longitude * 1_000_000).rounded())) }
+
+        // 带 wm_ctype 的定位参数(对齐原脚本:仅 corePage / exchange 携带)
         func locParams() -> [String: String] {
             [
                 "parActivityId": config.parActivityId,
-                "wm_latitude": String(format: "%.6f", city.latitude),
-                "wm_longitude": String(format: "%.6f", city.longitude),
+                "wm_latitude": microLat(),
+                "wm_longitude": microLng(),
                 "wm_ctype": "mtandroid"
+            ]
+        }
+
+        // 不带 wm_ctype 的精简定位参数(对齐原脚本:doAction/sendTaskRedBean/drawlottery/acceptRed/redToBean/myProps)
+        func baseParams() -> [String: String] {
+            [
+                "parActivityId": config.parActivityId,
+                "wm_latitude": microLat(),
+                "wm_longitude": microLng()
             ]
         }
 
@@ -93,35 +106,41 @@ final class TaskRunner {
         if wantSign {
             await step(&report, title: "① 签到领红豆") {
                 let resp = try await client.post("drawPoints", params: [:], token: account.token)
-                let beans = JSONSearch.intValue(resp.object, keys: ["sendBeanCount", "beanCount", "beans"])
-                let detail = beans.map { "获得 \($0) 红豆" } ?? ""
-                return detail.isEmpty ? (resp.msg.isEmpty ? "已完成" : resp.msg) : "\(detail) · \(resp.msg)"
+                var parts: [String] = []
+                if let beans = JSONSearch.intValue(resp.object, keys: ["sendBeanCount", "beanCount", "beans"]) {
+                    parts.append("获得 \(beans) 红豆")
+                }
+                let msg = resp.describe("")
+                if !msg.isEmpty { parts.append(msg) }
+                return parts.isEmpty ? "已完成" : parts.joined(separator: " · ")
             }
             if report.tokenExpired { return finish(report) }
         }
 
         // ---------- ② 签到领必中符 ----------
         if wantSign {
-            var params = locParams()
+            var params = baseParams()
             params["action"] = "SiginInGetProp"
             await step(&report, title: "② 签到领必中符") {
                 let resp = try await client.post("signInProp", params: params, token: account.token)
                 if let signDays = JSONSearch.intValue(resp.data, keys: ["signDays"]), signDays > 0 {
                     return "签到成功,本周已连续签到 \(signDays) 天"
                 }
-                return resp.msg.isEmpty ? "今日已签到" : resp.msg
+                return resp.describe("今日已签到")
             }
             if report.tokenExpired { return finish(report) }
         }
 
         // ---------- ③ 每日任务红豆(浏览任务) ----------
         if wantSign {
-            var params = locParams()
+            var params = baseParams()
             params["portraitId"] = "498"
             await step(&report, title: "③ 每日任务红豆") {
                 let resp = try await client.post("sendTaskRedBean", params: params, token: account.token)
-                let beans = JSONSearch.intValue(resp.data, keys: ["sendBeanCount", "beanCount", "beans"])
-                return beans.map { "获得 \($0) 红豆" } ?? (resp.msg.isEmpty ? "已完成" : resp.msg)
+                if let beans = JSONSearch.intValue(resp.data, keys: ["sendBeanCount", "beanCount", "beans"]) {
+                    return "获得 \(beans) 红豆"
+                }
+                return resp.describe("已完成")
             }
             if report.tokenExpired { return finish(report) }
         }
@@ -135,6 +154,10 @@ final class TaskRunner {
                 batchId = JSONSearch.stringValue(resp.data, keys: ["batchId"])
                 exchangeRuleId = JSONSearch.stringValue(resp.object, keys: ["exchangeRuleId"])
                 if batchId == nil {
+                    // code 非 0 说明是接口/参数错误,不能误报成"不在抢券时段"
+                    if let c = resp.code, c != 0 {
+                        return resp.msg.isEmpty ? "接口异常(code=\(c))" : "\(resp.msg)(code=\(c))"
+                    }
                     return "当前不在抢券时段(每天 11:00 / 17:00 / 21:00 开放)"
                 }
                 // 尝试解析红包池库存描述
@@ -160,9 +183,15 @@ final class TaskRunner {
             var propId = "1"
             var propDesc = "未使用必中符"
             if options.usePropIfAvailable {
-                if let propsResp = try? await client.post("myProps", params: locParams(), token: account.token),
-                   let props = JSONSearch.findArray(propsResp.object, key: "props") {
-                    // status==1 表示可用
+                if let propsResp = try? await client.post("myProps", params: baseParams(), token: account.token) {
+                    // 原脚本:响应 data 本身就是道具数组
+                    var props: [[String: Any]] = []
+                    if let arr = propsResp.object["data"] as? [[String: Any]] {
+                        props = arr
+                    } else if let arr = JSONSearch.findArray(propsResp.object, key: "props") {
+                        props = arr
+                    }
+                    // status==1 表示可用,取第一个有效道具
                     if let usable = props.first(where: { ($0["status"] as? Int) == 1 }) {
                         let pid = JSONSearch.intValue(usable, keys: ["propId"]) ?? 1
                         propId = String(pid)
@@ -172,7 +201,7 @@ final class TaskRunner {
                 }
             }
 
-            var params = locParams()
+            var params = baseParams()
             params["batchId"] = batchId
             params["isShareLink"] = "true"
             params["propType"] = "1"
@@ -185,24 +214,24 @@ final class TaskRunner {
                     let yuan = Double(price) / 100.0
                     return String(format: "抢到 %.2f 元神券", yuan)
                 }
-                return resp.msg.isEmpty ? "抽奖完成" : resp.msg
+                return resp.describe("抽奖完成")
             }
             if report.tokenExpired { return finish(report) }
 
             // ---------- ⑥ 发放到账 / 小额转红豆 ----------
             if wonPrice != nil {
-                var params = locParams()
+                var params = baseParams()
                 params["batchId"] = batchId
                 let price = wonPrice!
                 if price < options.smallRedToBeanThreshold {
                     await step(&report, title: "⑥ 小额券转红豆") {
                         let resp = try await client.post("redToBean", params: params, token: account.token)
-                        return resp.msg.isEmpty ? "\(Double(price) / 100.0) 元神券已转为红豆" : resp.msg
+                        return resp.describe("\(Double(price) / 100.0) 元神券已转为红豆")
                     }
                 } else {
                     await step(&report, title: "⑥ 神券发放到账") {
                         let resp = try await client.post("acceptRed", params: params, token: account.token)
-                        return resp.msg.isEmpty ? "\(Double(price) / 100.0) 元神券已放入账户" : resp.msg
+                        return resp.describe("\(Double(price) / 100.0) 元神券已放入账户")
                     }
                 }
                 if report.tokenExpired { return finish(report) }
@@ -212,11 +241,13 @@ final class TaskRunner {
         // ---------- ⑦ 查询红包库 ----------
         if options.scope == .all {
             await step(&report, title: "⑦ 查询红包库") {
-                let resp = try await client.post("myReward", params: [:], token: account.token)
-                if let rewards = JSONSearch.findArray(resp.object, key: "rewardList") ?? JSONSearch.findArray(resp.object, key: "list") {
+                let resp = try await client.post("myReward", params: ["parActivityId": config.parActivityId], token: account.token)
+                if let rewards = JSONSearch.findArray(resp.object, key: "myawardInfos")
+                    ?? JSONSearch.findArray(resp.object, key: "rewardList")
+                    ?? JSONSearch.findArray(resp.object, key: "list") {
                     return "红包库共 \(rewards.count) 个红包"
                 }
-                return resp.msg.isEmpty ? "查询完成" : resp.msg
+                return resp.describe("查询完成")
             }
             if report.tokenExpired { return finish(report) }
         }
@@ -228,10 +259,10 @@ final class TaskRunner {
                 params["exchangeRuleId"] = ruleId
                 params["propId"] = "5"
                 params["exchangeCoinNumber"] = String(options.exchangeBeanThreshold)
-                params["wm_actual_latitude"] = String(format: "%.6f", city.latitude)
-                params["wm_actual_longitude"] = String(format: "%.6f", city.longitude)
+                params["wm_actual_latitude"] = microLat()
+                params["wm_actual_longitude"] = microLng()
                 let resp = try await client.post("exchange", params: params, token: account.token)
-                return resp.msg.isEmpty ? "已兑换" : resp.msg
+                return resp.describe("已兑换")
             }
             if report.tokenExpired { return finish(report) }
         }

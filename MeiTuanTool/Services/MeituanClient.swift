@@ -57,6 +57,13 @@ actor MeituanClient {
                 ?? ""
         }
         var data: [String: Any]? { object["data"] as? [String: Any] }
+
+        /// 生成步骤详情文案:接口返回非 0 时附带 code,方便定位问题(美团各接口错误码含义不同)
+        func describe(_ fallback: String) -> String {
+            let m = msg
+            guard let c = code, c != 0 else { return m.isEmpty ? fallback : m }
+            return m.isEmpty ? "(code=\(c))" : "\(m)(code=\(c))"
+        }
     }
 
     /// 按配置 key 发起请求
