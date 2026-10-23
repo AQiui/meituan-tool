@@ -1,0 +1,50 @@
+name: Build IPA
+
+# 推送到 main 分支或手动触发时,自动在云端 Mac 上编译出无签名 IPA
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build (unsigned, for TrollStore)
+        run: |
+          xcodebuild \
+            -project MeiTuanTool/MeiTuanTool.xcodeproj \
+            -scheme MeiTuanTool \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            clean build
+
+      - name: Package IPA
+        run: |
+          APP_PATH="build/Build/Products/Release-iphoneos/MeiTuanTool.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "::error::找不到 .app,构建失败"
+            exit 1
+          fi
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          zip -qry MeiTuanTool.ipa Payload
+          ls -lh MeiTuanTool.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeiTuanTool-ipa
+          path: MeiTuanTool.ipa
+          retention-days: 14
