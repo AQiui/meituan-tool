@@ -204,7 +204,7 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         Section(header: Text("关于")) {
-            infoRow("版本", "1.0.0")
+            infoRow("版本", Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
             VStack(alignment: .leading, spacing: 8) {
                 Text("免责声明")
                     .font(.subheadline)
