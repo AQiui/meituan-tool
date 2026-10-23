@@ -252,25 +252,37 @@ actor MemberMonitor {
         var result = TaskList()
         for task in tasks {
             let title = task["title"] as? String ?? "任务"
-            let status = task["status"] as? String ?? ""
             let desc = task["description"] as? String ?? ""
+            // 注意:接口字段名是 taskStatus(不是 status)
+            let status = task["taskStatus"] as? String ?? task["status"] as? String ?? ""
             let progress = task["taskProgress"] as? [String: Any]
             let reached = progress?["reachedCount"] as? Int ?? 0
             let all = progress?["allCount"] as? Int ?? 0
 
             let isSignTask = desc.contains("签到") || title.contains("签到")
-            // RECEIVED=已领取并完成 / FORBID_RECEIVE=已领取不可再领 → 今日已签到
-            let done = (status == "RECEIVED" || status == "FORBID_RECEIVE")
 
             if isSignTask {
-                result.signedToday = done
+                // 「今日已签到」用子任务最晚 reachTime(毫秒时间戳)判断是否今天;
+                // taskStatus=RECEIVED 只说明任务已激活,不能证明今天签了(连续签到会断)
+                let subTasks = task["subTasks"] as? [[String: Any]] ?? []
+                var latestReach: Double = 0
+                for sub in subTasks {
+                    let rt = (sub["reachTime"] as? Double) ?? (sub["reachTime"] as? Int).map(Double.init) ?? 0
+                    if rt > latestReach { latestReach = rt }
+                }
+                result.signedToday = latestReach > 0 && Self.isToday(latestReach / 1000)
                 result.signTaskTitle = title
                 result.signProgress = "\(reached)/\(all)"
-            } else if status == "CAN_RECEIVE" || (done && all > reached) {
+            } else if reached < all {
                 result.otherTasks.append("\(title)(\(reached)/\(all))")
             }
         }
         return result
+    }
+
+    /// 判断秒级时间戳是否为今天
+    private static func isToday(_ epochSeconds: Double) -> Bool {
+        Calendar.current.isDateInToday(Date(timeIntervalSince1970: epochSeconds))
     }
 
     // MARK: - 错误
